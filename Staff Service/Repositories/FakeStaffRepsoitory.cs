@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Staff_Service.Repositories
 {
-    public class FakeStaffRepsoitory : IStaffRepository
+    public class FakeStaffRepository : IStaffRepository
     {
         private readonly List<StaffDomainModel> _staffList;
 
-        public FakeStaffRepsoitory() 
+        public FakeStaffRepository() 
         {
             _staffList = new List<StaffDomainModel>()
             {

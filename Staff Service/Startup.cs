@@ -30,7 +30,7 @@ namespace Staff_Service
         {
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddSingleton<IStaffRepository, FakeStaffRepsoitory>();
+            services.AddSingleton<IStaffRepository, FakeStaffRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
