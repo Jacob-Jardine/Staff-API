@@ -11,6 +11,8 @@ namespace Staff_Service.Repositories
     {
         private readonly Context.dbContext _context;
 
+        public SqlStaffRepository() { }
+
         public SqlStaffRepository(Context.dbContext context) 
         {
             _context = context;    
@@ -22,17 +24,15 @@ namespace Staff_Service.Repositories
         public StaffDomainModel CreateStaff(StaffDomainModel staffDomainModel) => _context._staff.Add(staffDomainModel).Entity;
         
 
-        public void DeleteStaff(int? ID)
+        public void DeleteStaff(int ID)
         {
-            var deleteStaffDomainModel = GetStaffByIDAsnyc(ID);
-            _context.Remove(deleteStaffDomainModel.Result.StaffID);
+            StaffDomainModel StaffDomainModel = GetStaffByIDAsnyc(ID).Result;
+            _context._staff.Remove(StaffDomainModel);
         }
 
         public void UpdateStaff(StaffDomainModel staffDomainModel)
         {
-            var oldStaffDomainModel = GetStaffByIDAsnyc(staffDomainModel.StaffID);
-            _context.Remove(oldStaffDomainModel);
-            _context.Add(staffDomainModel);
+            _context._staff.Update(staffDomainModel);
         }
 
         public async Task SaveChangesAsync()

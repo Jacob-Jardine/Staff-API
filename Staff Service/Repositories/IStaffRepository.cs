@@ -12,7 +12,7 @@ namespace Staff_Service.Repositories
         public Task<StaffDomainModel> GetStaffByIDAsnyc(int? ID);
         public StaffDomainModel CreateStaff(StaffDomainModel staffDomainModel);
         public void UpdateStaff(StaffDomainModel staffDomainModel);
-        public void DeleteStaff(int? ID);
+        public void DeleteStaff(int ID);
         public Task SaveChangesAsync();
     }
 }

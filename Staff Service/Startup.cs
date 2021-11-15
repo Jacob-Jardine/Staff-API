@@ -38,7 +38,7 @@ namespace Staff_Service
 
             if (_environment.IsDevelopment()) 
             {
-                services.AddHttpClient<IStaffRepository, SqlStaffRepository>();
+                services.AddScoped<IStaffRepository, SqlStaffRepository>();
             }
             else if (_environment.IsStaging() || _environment.IsProduction()) 
             {

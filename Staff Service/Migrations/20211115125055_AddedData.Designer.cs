@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Staff_Service.Context;
 
 namespace Staff_Service.Migrations
 {
     [DbContext(typeof(dbContext))]
-    partial class dbContextModelSnapshot : ModelSnapshot
+    [Migration("20211115125055_AddedData")]
+    partial class AddedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,27 +51,6 @@ namespace Staff_Service.Migrations
                             StaffEmailAddress = "Jacob-Jardine@ThAmCo.co.uk",
                             StaffFirstName = "Jacob",
                             StaffLastName = "Jardine"
-                        },
-                        new
-                        {
-                            StaffID = 2,
-                            StaffEmailAddress = "Ben-Souch@ThAmCo.co.uk",
-                            StaffFirstName = "Ben",
-                            StaffLastName = "Souch"
-                        },
-                        new
-                        {
-                            StaffID = 3,
-                            StaffEmailAddress = "Joseph-Stavers@ThAmCo.co.uk",
-                            StaffFirstName = "Joseph",
-                            StaffLastName = "Stavers"
-                        },
-                        new
-                        {
-                            StaffID = 4,
-                            StaffEmailAddress = "Teddy-Teasdale@ThAmCo.co.uk",
-                            StaffFirstName = "Teddy",
-                            StaffLastName = "Teasdale"
                         });
                 });
 #pragma warning restore 612, 618

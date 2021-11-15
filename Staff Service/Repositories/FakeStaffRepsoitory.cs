@@ -41,7 +41,7 @@ namespace Staff_Service.Repositories
             _staffList.Add(staffDomainModel);
         }
 
-        public void DeleteStaff(int? ID) 
+        public void DeleteStaff(int ID) 
         {
             var deleteStaffDomainModel = GetStaffByIDAsnyc(ID);
             _staffList.RemoveAll(x => x.StaffID == deleteStaffDomainModel.Result.StaffID);
