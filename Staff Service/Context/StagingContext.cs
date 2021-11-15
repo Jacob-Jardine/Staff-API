@@ -7,16 +7,23 @@ using System.Threading.Tasks;
 
 namespace Staff_Service.Context
 {
-    public class dbContext : DbContext
+    public class StagingContext : DbContext
     {
-        public DbSet<StaffDomainModel> _staff { get; set; }
+        public virtual DbSet<StaffDomainModel> staging_db { get; set; }
 
-        public dbContext(DbContextOptions<dbContext> options) : base(options) { }
+        public StagingContext(DbContextOptions<StagingContext> options) : base(options) { }
+
+        public StagingContext() { }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+        }
 
         protected override void OnModelCreating(ModelBuilder builder) 
         {
             base.OnModelCreating(builder);
-            builder.HasDefaultSchema("staff");
+            builder.HasDefaultSchema("staging");
 
             builder.Entity<StaffDomainModel>()
                 .HasData(

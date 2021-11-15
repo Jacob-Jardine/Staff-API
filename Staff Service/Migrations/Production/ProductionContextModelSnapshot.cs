@@ -2,21 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Staff_Service.Context;
 
-namespace Staff_Service.Migrations
+namespace Staff_Service.Migrations.Production
 {
-    [DbContext(typeof(StagingContext))]
-    [Migration("20211115132933_AddedMoreStaff")]
-    partial class AddedMoreStaff
+    [DbContext(typeof(ProductionContext))]
+    partial class ProductionContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("staff")
+                .HasDefaultSchema("production")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -42,7 +40,7 @@ namespace Staff_Service.Migrations
 
                     b.HasKey("StaffID");
 
-                    b.ToTable("_staff");
+                    b.ToTable("production_db");
 
                     b.HasData(
                         new
@@ -65,13 +63,6 @@ namespace Staff_Service.Migrations
                             StaffEmailAddress = "Joseph-Stavers@ThAmCo.co.uk",
                             StaffFirstName = "Joseph",
                             StaffLastName = "Stavers"
-                        },
-                        new
-                        {
-                            StaffID = 4,
-                            StaffEmailAddress = "Teddy-Teasdale@ThAmCo.co.uk",
-                            StaffFirstName = "Teddy",
-                            StaffLastName = "Teasdale"
                         });
                 });
 #pragma warning restore 612, 618

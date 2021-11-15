@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Staff_Service.Context;
 using Staff_Service.DomainModel;
 using System;
 using System.Collections.Generic;
@@ -9,35 +11,73 @@ namespace Staff_Service.Repositories
 {
     public class SqlStaffRepository : IStaffRepository
     {
-        private readonly Context.dbContext _context;
-
-        public SqlStaffRepository() { }
-
-        public SqlStaffRepository(Context.dbContext context) 
+        private readonly StagingContext _stagingContext;
+        private readonly ProductionContext _productionContext;
+       
+        public SqlStaffRepository(StagingContext stagingContext, ProductionContext productionContext) 
         {
-            _context = context;    
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging") 
+            {
+                _stagingContext = stagingContext;
+            }
+            else if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production") 
+            {
+                _productionContext = productionContext;
+            }
         }
 
-        public async Task<IEnumerable<StaffDomainModel>> GetAllStaffAsync() => await _context._staff.ToListAsync();
+        public async Task<IEnumerable<StaffDomainModel>> GetAllStaffAsync() 
+        {
+            return (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging") ? await _stagingContext.staging_db.ToListAsync() : await _productionContext.production_db.ToListAsync();
+        }
 
-        public async Task<StaffDomainModel> GetStaffByIDAsnyc(int? ID) => await _context._staff.FirstOrDefaultAsync(x => x.StaffID == ID);
-        public StaffDomainModel CreateStaff(StaffDomainModel staffDomainModel) => _context._staff.Add(staffDomainModel).Entity;
-        
+        public async Task<StaffDomainModel> GetStaffByIDAsnyc(int? ID) 
+        {
+            return (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging") ? await _stagingContext.staging_db.FirstOrDefaultAsync(x => x.StaffID == ID) : await _productionContext.production_db.FirstOrDefaultAsync(x => x.StaffID == ID);
+        }
+        public StaffDomainModel CreateStaff(StaffDomainModel staffDomainModel) 
+        {
+            //=> _context.db_staff_staging.Add(staffDomainModel).Entity;
+            return (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging") ? _stagingContext.staging_db.Add(staffDomainModel).Entity : _productionContext.production_db.Add(staffDomainModel).Entity;
+        }
+
 
         public void DeleteStaff(int ID)
         {
             StaffDomainModel StaffDomainModel = GetStaffByIDAsnyc(ID).Result;
-            _context._staff.Remove(StaffDomainModel);
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging")
+            {
+                _stagingContext.staging_db.Remove(StaffDomainModel);
+            }
+            else if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                _productionContext.production_db.Remove(StaffDomainModel);
+            }
+            
         }
 
         public void UpdateStaff(StaffDomainModel staffDomainModel)
         {
-            _context._staff.Update(staffDomainModel);
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging")
+            {
+                _stagingContext.staging_db.Update(staffDomainModel);
+            }
+            else if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                _productionContext.production_db.Update(staffDomainModel);
+            }
         }
 
         public async Task SaveChangesAsync()
         {
-            await _context.SaveChangesAsync();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging")
+            {
+                await _stagingContext.SaveChangesAsync();
+            }
+            else if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                await _productionContext.SaveChangesAsync();
+            }     
         }
     }
 }

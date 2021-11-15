@@ -7,14 +7,14 @@ using Staff_Service.Context;
 
 namespace Staff_Service.Migrations
 {
-    [DbContext(typeof(dbContext))]
+    [DbContext(typeof(StagingContext))]
     partial class dbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("staff")
+                .HasDefaultSchema("staging")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -40,7 +40,7 @@ namespace Staff_Service.Migrations
 
                     b.HasKey("StaffID");
 
-                    b.ToTable("_staff");
+                    b.ToTable("staging_db");
 
                     b.HasData(
                         new

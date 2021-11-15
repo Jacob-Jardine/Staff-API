@@ -30,19 +30,24 @@ namespace Staff_Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<dbContext>(options =>
+            services.AddDbContext<StagingContext>(options =>
             {
-                var cs = Configuration.GetConnectionString("StaffConnection");
+                var cs = Configuration.GetConnectionString("DbConnection");
+                options.UseSqlServer(cs);
+            });
+            services.AddDbContext<ProductionContext>(options =>
+            {
+                var cs = Configuration.GetConnectionString("DbConnection");
                 options.UseSqlServer(cs);
             });
 
             if (_environment.IsDevelopment()) 
             {
-                services.AddScoped<IStaffRepository, SqlStaffRepository>();
+                services.AddSingleton<IStaffRepository, FakeStaffRepository>();
             }
             else if (_environment.IsStaging() || _environment.IsProduction()) 
             {
-            
+                services.AddScoped<IStaffRepository, SqlStaffRepository>();
             }
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

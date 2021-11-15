@@ -8,7 +8,7 @@ using Staff_Service.Context;
 
 namespace Staff_Service.Migrations
 {
-    [DbContext(typeof(dbContext))]
+    [DbContext(typeof(StagingContext))]
     [Migration("20211115100822_InitialMigration")]
     partial class InitialMigration
     {
