@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Staff_Service.Context;
 using Staff_Service.Repositories;
 using System;
 using System.Collections.Generic;
@@ -28,9 +30,23 @@ namespace Staff_Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<dbContext>(options =>
+            {
+                var cs = Configuration.GetConnectionString("StaffConnection");
+                options.UseSqlServer(cs);
+            });
+
+            if (_environment.IsDevelopment()) 
+            {
+                services.AddHttpClient<IStaffRepository, SqlStaffRepository>();
+            }
+            else if (_environment.IsStaging() || _environment.IsProduction()) 
+            {
+            
+            }
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddSingleton<IStaffRepository, FakeStaffRepository>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

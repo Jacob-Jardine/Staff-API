@@ -9,9 +9,9 @@ namespace Staff_Service.Repositories
 {
     public class SqlStaffRepository : IStaffRepository
     {
-        private readonly Context.Context _context;
+        private readonly Context.dbContext _context;
 
-        public SqlStaffRepository(Context.Context context) 
+        public SqlStaffRepository(Context.dbContext context) 
         {
             _context = context;    
         }
