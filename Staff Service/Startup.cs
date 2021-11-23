@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Staff_Service.Context;
+using Staff_Service.Helpers;
 using Staff_Service.Repositories;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace Staff_Service
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
             if (_environment.IsDevelopment()) 
             {
                 services.AddSingleton<IStaffRepository, FakeStaffRepository>();
@@ -50,11 +51,12 @@ namespace Staff_Service
             }
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            
+            services.AddMemoryCache();
+            services.AddSingleton<IStaffMemoryCache, StaffMemoryCache>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IStaffMemoryCache memoryCache)
         {
             if (env.IsDevelopment())
             {
@@ -71,6 +73,8 @@ namespace Staff_Service
             {
                 endpoints.MapControllers();
             });
+
+            memoryCache.AutomateCache();
         }
     }
 }

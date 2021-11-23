@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Staff_Service.DomainModel;
 using Staff_Service.DTOs;
+using Microsoft.Extensions.Caching.Memory;
 using Staff_Service.Repositories;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,13 @@ namespace Staff_Service.Controllers
     {
         private readonly IStaffRepository _staffRepository;
         private IMapper _mapper;
+        private IMemoryCache _memoryCache;
 
-        public StaffController(IStaffRepository staffRepository, IMapper mapper) 
+        public StaffController(IStaffRepository staffRepository, IMapper mapper, IMemoryCache memoryCache) 
         {
             _staffRepository = staffRepository;
             _mapper = mapper;
+            _memoryCache = memoryCache;
         }
 
         [HttpGet("GetAllStaff")]
@@ -31,6 +34,11 @@ namespace Staff_Service.Controllers
         {
             try 
             {
+                if(_memoryCache.TryGetValue("GetAllStaff", out IEnumerable<StaffDomainModel> staffReadDTO))
+                {
+                    return Ok(_mapper.Map<IEnumerable<StaffReadDTO>>(staffReadDTO));
+                }
+
                 var getAllStaff = await _staffRepository.GetAllStaffAsync();
                 return Ok(_mapper.Map<IEnumerable<StaffReadDTO>>(getAllStaff));
             }
