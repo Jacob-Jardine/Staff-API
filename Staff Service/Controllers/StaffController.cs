@@ -34,9 +34,9 @@ namespace Staff_Service.Controllers
         {
             try 
             {
-                if(_memoryCache.TryGetValue("GetAllStaff", out IEnumerable<StaffDomainModel> staffReadDTO))
+                if(_memoryCache.TryGetValue("GetAllStaff", out IEnumerable<StaffDomainModel> staffDomainModel))
                 {
-                    return Ok(_mapper.Map<IEnumerable<StaffReadDTO>>(staffReadDTO));
+                    return Ok(_mapper.Map<IEnumerable<StaffReadDTO>>(staffDomainModel));
                 }
 
                 var getAllStaff = await _staffRepository.GetAllStaffAsync();
@@ -53,6 +53,15 @@ namespace Staff_Service.Controllers
         {
             try 
             {
+                if (_memoryCache.TryGetValue("GetAllStaff", out IEnumerable<StaffDomainModel> staffDomainModel)) 
+                {
+                    var staffMember = staffDomainModel.FirstOrDefault(x => x.StaffID == ID);
+                    if(staffMember != null)
+                    {
+                        return Ok(_mapper.Map<StaffReadDTO>(staffMember));
+                    }
+                }
+                
                 var getStaffByID = await _staffRepository.GetStaffByIDAsnyc(ID);
                 if (getStaffByID != null) 
                 {
