@@ -22,7 +22,7 @@ namespace Staff_Service.Repositories
             };
         }
 
-        public Task<IEnumerable<StaffDomainModel>> GetAllStaffAsync() => Task.FromResult(_staffList.AsEnumerable());
+        public Task<IEnumerable<StaffDomainModel>> GetAllStaffAsync() => Task.FromResult(new List<StaffDomainModel>(_staffList).AsEnumerable());
 
         public Task<StaffDomainModel> GetStaffByIDAsnyc(int? ID) => Task.FromResult(_staffList.FirstOrDefault(x => x.StaffID == ID));
 
