@@ -19,12 +19,14 @@ namespace Staff_Service.Controllers
     [ApiController]
     public class StaffController : ControllerBase
     {
+        private readonly ILogger _logger;
         private readonly IStaffRepository _staffRepository;
-        private IMapper _mapper;
-        private IMemoryCache _memoryCache;
+        private readonly IMapper _mapper;
+        private readonly IMemoryCache _memoryCache;
 
-        public StaffController(IStaffRepository staffRepository, IMapper mapper, IMemoryCache memoryCache) 
+        public StaffController(ILogger logger, IStaffRepository staffRepository, IMapper mapper, IMemoryCache memoryCache) 
         {
+            _logger = logger;
             _staffRepository = staffRepository;
             _mapper = mapper;
             _memoryCache = memoryCache;
@@ -43,8 +45,9 @@ namespace Staff_Service.Controllers
                 var getAllStaff = await _staffRepository.GetAllStaffAsync();
                 return Ok(_mapper.Map<IEnumerable<StaffReadDTO>>(getAllStaff));
             }
-            catch 
+            catch (Exception _exception)
             {
+                _logger.LogError(_exception, "An exception occured");
                 return NotFound();
             }
         }
