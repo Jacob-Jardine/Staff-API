@@ -80,7 +80,7 @@ namespace Staff_Service.Controllers
             }
             catch
             {
-                return BadRequest()
+                return BadRequest();
             }
         }
 
