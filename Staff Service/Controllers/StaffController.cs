@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace Staff_Service.Controllers
 {
@@ -53,6 +54,11 @@ namespace Staff_Service.Controllers
         {
             try 
             {
+                if(ID < 1)
+                {
+                    return NotFound("ID can't be less than 1");
+                }
+
                 if (_memoryCache.TryGetValue("GetAllStaff", out IEnumerable<StaffDomainModel> staffDomainModel)) 
                 {
                     var staffMember = staffDomainModel.FirstOrDefault(x => x.StaffID == ID);
@@ -69,12 +75,12 @@ namespace Staff_Service.Controllers
                 }
                 else 
                 {
-                    return NotFound();
+                    return NotFound($"Can't find staff memeber with ID of {ID}");
                 }
             }
             catch
             {
-                return NotFound();
+                return BadRequest()
             }
         }
 
@@ -144,16 +150,21 @@ namespace Staff_Service.Controllers
         {
             try
             {
+                if (ID < 1)
+                {
+                    return NotFound("ID can't be less than 1");
+                }
+
                 var staffModel = await _staffRepository.GetStaffByIDAsnyc(ID);
                 if (staffModel == null)
                 {
-                    return NotFound();
+                    return NotFound($"Can't find staff memeber with ID of {ID}");
                 }
                 else
                 {
                     _staffRepository.DeleteStaff(staffModel.StaffID);
                     await _staffRepository.SaveChangesAsync();
-                    return Ok();
+                    return Ok($"Delete staff memeber with ID {ID}");
                 }
             }
             catch
