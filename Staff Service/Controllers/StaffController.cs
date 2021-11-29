@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Staff_Service.Controllers
 {
@@ -19,20 +20,19 @@ namespace Staff_Service.Controllers
     [ApiController]
     public class StaffController : ControllerBase
     {
-        private readonly ILogger _logger;
         private readonly IStaffRepository _staffRepository;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _memoryCache;
 
-        public StaffController(ILogger logger, IStaffRepository staffRepository, IMapper mapper, IMemoryCache memoryCache) 
+        public StaffController(IStaffRepository staffRepository, IMapper mapper, IMemoryCache memoryCache) 
         {
-            _logger = logger;
             _staffRepository = staffRepository;
             _mapper = mapper;
             _memoryCache = memoryCache;
         }
 
         [HttpGet("GetAllStaff")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<StaffReadDTO>>> GetAllStaff()
         {
             try 
@@ -47,12 +47,12 @@ namespace Staff_Service.Controllers
             }
             catch (Exception _exception)
             {
-                _logger.LogError(_exception, "An exception occured");
                 return NotFound();
             }
         }
 
         [HttpGet("{ID}")]
+        [Authorize]
         public async Task<ActionResult<StaffReadDTO>> GetStaffByID(int ID)
         {
             try 
@@ -88,6 +88,7 @@ namespace Staff_Service.Controllers
         }
 
         [HttpPost("CreateStaff")]
+        [Authorize]
         public async Task<ActionResult> CreateStaffMember([FromBody] StaffCreateDTO staffCreateDTO) 
         {
             try 
@@ -115,6 +116,7 @@ namespace Staff_Service.Controllers
         }
 
         [HttpPut("update/{ID}")]
+        [Authorize]
         public async Task<ActionResult> UpdateStaffMemeber([FromBody] StaffUpdateDTO staffUpdateDTO, int ID) 
         {
             try 
@@ -149,6 +151,7 @@ namespace Staff_Service.Controllers
         }
         
         [HttpDelete("delete/{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteStaffByID(int ID) 
         {
             try
