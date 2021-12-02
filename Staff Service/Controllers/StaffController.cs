@@ -32,7 +32,7 @@ namespace Staff_Service.Controllers
         }
 
         [HttpGet("GetAllStaff")]
-        [Authorize]
+        [Authorize("ReadAllStaff")]
         public async Task<ActionResult<IEnumerable<StaffReadDTO>>> GetAllStaff()
         {
             try 
@@ -52,7 +52,7 @@ namespace Staff_Service.Controllers
         }
 
         [HttpGet("{ID}")]
-        [Authorize]
+        [Authorize("ReadStaff")]
         public async Task<ActionResult<StaffReadDTO>> GetStaffByID(int ID)
         {
             try 
@@ -88,7 +88,7 @@ namespace Staff_Service.Controllers
         }
 
         [HttpPost("CreateStaff")]
-        [Authorize]
+        [Authorize("CreateStaff")]
         public async Task<ActionResult> CreateStaffMember([FromBody] StaffCreateDTO staffCreateDTO) 
         {
             try 
@@ -116,7 +116,7 @@ namespace Staff_Service.Controllers
         }
 
         [HttpPut("update/{ID}")]
-        [Authorize]
+        [Authorize("UpdateStaff")]
         public async Task<ActionResult> UpdateStaffMemeber([FromBody] StaffUpdateDTO staffUpdateDTO, int ID) 
         {
             try 
@@ -151,7 +151,7 @@ namespace Staff_Service.Controllers
         }
         
         [HttpDelete("delete/{id}")]
-        [Authorize]
+        [Authorize("DeleteStaff")]
         public async Task<ActionResult> DeleteStaffByID(int ID) 
         {
             try

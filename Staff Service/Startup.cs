@@ -59,6 +59,20 @@ namespace Staff_Service
                 options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
                 options.Audience = Configuration["Auth0:Audience"];
             });
+
+            services.AddAuthorization(o =>
+            {
+                o.AddPolicy("ReadStaff", policy =>
+                    policy.RequireClaim("permissions", "read:staff"));
+                o.AddPolicy("ReadAllStaff", policy =>
+                    policy.RequireClaim("permissions", "read:staffs"));
+                o.AddPolicy("CreateStaff", policy =>
+                    policy.RequireClaim("permissions", "add:staff"));
+                o.AddPolicy("UpdateStaff", policy =>
+                    policy.RequireClaim("permissions", "edit:staff"));
+                o.AddPolicy("DeleteStaff", policy =>
+                    policy.RequireClaim("permissions", "delete:staff"));
+            });
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMemoryCache();
