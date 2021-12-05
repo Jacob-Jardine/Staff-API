@@ -31,25 +31,7 @@ namespace Staff_Service
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
-            if (_environment.IsDevelopment()) 
-            {
-                services.AddSingleton<IStaffRepository, FakeStaffRepository>();
-            }
-            else if (_environment.IsStaging() || _environment.IsProduction()) 
-            {
-                services.AddDbContext<StagingContext>(options =>
-                {
-                    var cs = Configuration.GetConnectionString("DbConnection");
-                    options.UseSqlServer(cs);
-                });
-                services.AddDbContext<ProductionContext>(options =>
-                {
-                    var cs = Configuration.GetConnectionString("DbConnection");
-                    options.UseSqlServer(cs);
-                });
-                services.AddScoped<IStaffRepository, SqlStaffRepository>();
-            }
+        {
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,6 +55,36 @@ namespace Staff_Service
                 o.AddPolicy("DeleteStaff", policy =>
                     policy.RequireClaim("permissions", "delete:staff"));
             });
+
+            if (_environment.IsDevelopment()) 
+            {
+                services.AddSingleton<IStaffRepository, FakeStaffRepository>();
+            }
+            else if (_environment.IsStaging())
+            {
+                services.AddDbContext<StagingContext>(options => options.UseSqlServer
+                (
+                    Configuration.GetConnectionString("DbConnection"),
+                        sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(6),
+                        errorNumbersToAdd: null)
+                ));
+                services.AddScoped<IStaffRepository, SqlStaffRepository>();
+            }
+            else if (_environment.IsProduction()) 
+            {
+                services.AddDbContext<ProductionContext>(options => options.UseSqlServer
+                (
+                    Configuration.GetConnectionString("DbConnection"),
+                        sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(6),
+                        errorNumbersToAdd: null)
+                ));
+                services.AddScoped<IStaffRepository, SqlStaffRepository>();
+            }
+            
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMemoryCache();
