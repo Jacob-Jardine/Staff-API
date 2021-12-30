@@ -35,7 +35,7 @@ namespace Staff_Service.Repositories
                 staffDomainModel.StaffID = newStaffID;
                 staffDomainModel.StaffEmailAddress.ToLower();
                 _staffList.Add(staffDomainModel);
-                return Task.FromResult(staffDomainModel);
+                return staffDomainModel;
             }
             return null;
         }
