@@ -11,7 +11,7 @@ namespace Staff_Service.Context
     {
         public ProductionContext() { }
         public ProductionContext(DbContextOptions<ProductionContext> options) : base(options) { }
-        public DbSet<StaffDomainModel> production_db { get; set; }
+        public virtual DbSet<StaffDomainModel> production_db { get; set; }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
