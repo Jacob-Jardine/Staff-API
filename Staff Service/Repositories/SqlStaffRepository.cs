@@ -37,8 +37,26 @@ namespace Staff_Service.Repositories
         }
         public StaffDomainModel CreateStaff(StaffDomainModel staffDomainModel) 
         {
-            //=> _context.db_staff_staging.Add(staffDomainModel).Entity;
-            return (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging") ? _stagingContext.staging_db.Add(staffDomainModel).Entity : _productionContext.production_db.Add(staffDomainModel).Entity;
+            staffDomainModel.StaffEmailAddress.ToLower();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging")
+            {
+                var emailCheck = _stagingContext.staging_db.Any(x => x.StaffEmailAddress == staffDomainModel.StaffEmailAddress);
+                if (emailCheck == false)
+                {
+                    return _stagingContext.staging_db.Add(staffDomainModel).Entity;
+                }
+                return null;
+            }
+            else if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production") 
+            {
+                var emailCheck = _productionContext.production_db.Any(x => x.StaffEmailAddress == staffDomainModel.StaffEmailAddress);
+                if (emailCheck == false)
+                {
+                    return _productionContext.production_db.Add(staffDomainModel).Entity;
+                }
+                return null;
+            }
+            return null;
         }
 
 
