@@ -28,10 +28,16 @@ namespace Staff_Service.Repositories
 
         public StaffDomainModel CreateStaff(StaffDomainModel staffDomainModel)
         {
-            int newStaffID = GetStaffID();
-            staffDomainModel.StaffID = newStaffID;
-            _staffList.Add(staffDomainModel);
-            return staffDomainModel;
+            var emailCheck = _staffList.Any(x => x.StaffEmailAddress == staffDomainModel.StaffEmailAddress);
+            if (emailCheck == false)
+            {
+                int newStaffID = GetStaffID();
+                staffDomainModel.StaffID = newStaffID;
+                staffDomainModel.StaffEmailAddress.ToLower();
+                _staffList.Add(staffDomainModel);
+                return Task.FromResult(staffDomainModel);
+            }
+            return null;
         }
 
         public void UpdateStaff(StaffDomainModel staffDomainModel) 
