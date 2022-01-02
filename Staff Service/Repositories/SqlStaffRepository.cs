@@ -44,6 +44,10 @@ namespace Staff_Service.Repositories
 
         public async Task<bool> CreateStaff(StaffDomainModel staffDomainModel) 
         {
+            if(staffDomainModel == null)
+            {
+                return false;
+            }
             staffDomainModel.StaffEmailAddress.ToLower();
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging")
             {
@@ -69,30 +73,43 @@ namespace Staff_Service.Repositories
         }
 
 
-        public void DeleteStaff(int ID)
+        public async Task<bool> DeleteStaff(int ID)
         {
+            if(ID == null)
+            {
+                return false;
+            }
             StaffDomainModel StaffDomainModel = GetStaffByIDAsnyc(ID).Result;
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging")
             {
                 _stagingContext.staging_db.Remove(StaffDomainModel);
+                return true;
             }
             else if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
             {
                 _productionContext.production_db.Remove(StaffDomainModel);
+                return true;
             }
-            
+            return false;
         }
 
-        public void UpdateStaff(StaffDomainModel staffDomainModel)
+        public async Task<bool> UpdateStaff(StaffDomainModel staffDomainModel)
         {
+            if(staffDomainModel == null)
+            {
+                return false;
+            }
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging")
             {
                 _stagingContext.staging_db.Update(staffDomainModel);
+                return true;
             }
             else if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
             {
                 _productionContext.production_db.Update(staffDomainModel);
+                return true;
             }
+            return false;
         }
 
         public async Task SaveChangesAsync()

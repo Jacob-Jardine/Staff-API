@@ -40,17 +40,30 @@ namespace Staff_Service.Repositories
             return false;
         }
 
-        public void UpdateStaff(StaffDomainModel staffDomainModel) 
+        public async Task<bool> UpdateStaff(StaffDomainModel staffDomainModel) 
         {
+            if(staffDomainModel == null)
+            {
+                return false;
+            }
             var oldStaffDomainModel = GetStaffByIDAsnyc(staffDomainModel.StaffID);
             _staffList.RemoveAll(x => x.StaffID == oldStaffDomainModel.Result.StaffID);    
             _staffList.Add(staffDomainModel);
+            return true;
         }
 
-        public void DeleteStaff(int ID) 
+        public async Task<bool> DeleteStaff(int ID) 
         {
-            var deleteStaffDomainModel = GetStaffByIDAsnyc(ID);
-            _staffList.RemoveAll(x => x.StaffID == deleteStaffDomainModel.Result.StaffID);
+            try
+            {
+                var deleteStaffDomainModel = GetStaffByIDAsnyc(ID);
+                _staffList.RemoveAll(x => x.StaffID == deleteStaffDomainModel.Result.StaffID);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public Task SaveChangesAsync()

@@ -11,8 +11,8 @@ namespace Staff_Service.Repositories
         public Task<IEnumerable<StaffDomainModel>> GetAllStaffAsync();
         public Task<StaffDomainModel> GetStaffByIDAsnyc(int? ID);
         public Task<bool> CreateStaff(StaffDomainModel staffDomainModel);
-        public void UpdateStaff(StaffDomainModel staffDomainModel);
-        public void DeleteStaff(int ID);
+        public Task<bool> UpdateStaff(StaffDomainModel staffDomainModel);
+        public Task<bool> DeleteStaff(int ID);
         public Task SaveChangesAsync();
     }
 }

@@ -118,5 +118,18 @@ namespace Staff_xUnit_Tests
             //Assert
             Assert.False(result);
         }
+
+        [Fact]
+        public async Task UpdateStaff_null()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var result = await repo.UpdateStaff(null);
+
+            //Assert
+            Assert.False(result);
+        }
     }
 }

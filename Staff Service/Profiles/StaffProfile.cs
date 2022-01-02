@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Staff_Service.DomainModel;
 using Staff_Service.DTOs;
+using Staff_Service.Repositories.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace Staff_Service.Profiles
             CreateMap<StaffDomainModel, StaffUpdateDTO>();
             CreateMap<StaffUpdateDTO, StaffDomainModel>();
             CreateMap<StaffDeleteDTO, StaffDomainModel>();
+            CreateMap<StaffRepoModel, StaffDomainModel>();
         }
     }
 }
