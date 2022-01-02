@@ -93,21 +93,21 @@ namespace Staff_Service.Controllers
         {
             try 
             {
-                if (_memoryCache.TryGetValue("GetAllStaff", out List<StaffDomainModel> staffDomainModel))
-                {
-                    staffCreateDTO.StaffID = staffDomainModel.Max(x => x.StaffID) + 1;
-                    var staffMember = _mapper.Map<StaffDomainModel>(staffCreateDTO);
-                    staffDomainModel.Add(staffMember);
-                    if (staffMember != null)
-                    {
-                        return Ok(_mapper.Map<StaffReadDTO>(staffMember));
-                    }
-                }
+                //if (_memoryCache.TryGetValue("GetAllStaff", out List<StaffDomainModel> staffDomainModel))
+                //{
+                //    staffCreateDTO.StaffID = staffDomainModel.Max(x => x.StaffID) + 1;
+                //    var staffMember = _mapper.Map<StaffDomainModel>(staffCreateDTO);
+                //    staffDomainModel.Add(staffMember);
+                //    if (staffMember != null)
+                //    {
+                //        return Ok(_mapper.Map<StaffReadDTO>(staffMember));
+                //    }
+                //}
 
                 var staffModel = _mapper.Map<StaffDomainModel>(staffCreateDTO);
-                StaffDomainModel newStaffDomainModel = _staffRepository.CreateStaff(staffModel);
+                await _staffRepository.CreateStaff(staffModel);
                 await _staffRepository.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetStaffByID), new { ID = newStaffDomainModel.StaffID }, newStaffDomainModel);
+                return CreatedAtAction(nameof(GetStaffByID), new { ID = staffModel.StaffID }, staffModel);
             }
             catch 
             {

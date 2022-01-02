@@ -1,4 +1,5 @@
-﻿using AutoMapper.Configuration;
+﻿using AutoMapper;
+using AutoMapper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Staff_Service.Context;
 using Staff_Service.DomainModel;
@@ -13,7 +14,12 @@ namespace Staff_Service.Repositories
     {
         private readonly StagingContext _stagingContext;
         private readonly ProductionContext _productionContext;
-       
+
+        public SqlStaffRepository(ProductionContext productionContext)
+        {
+            _productionContext = productionContext;
+        }
+
         public SqlStaffRepository(StagingContext stagingContext, ProductionContext productionContext) 
         {
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging") 
@@ -35,7 +41,8 @@ namespace Staff_Service.Repositories
         {
             return (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging") ? await _stagingContext.staging_db.FirstOrDefaultAsync(x => x.StaffID == ID) : await _productionContext.production_db.FirstOrDefaultAsync(x => x.StaffID == ID);
         }
-        public StaffDomainModel CreateStaff(StaffDomainModel staffDomainModel) 
+
+        public async Task<bool> CreateStaff(StaffDomainModel staffDomainModel) 
         {
             staffDomainModel.StaffEmailAddress.ToLower();
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging")
@@ -43,20 +50,22 @@ namespace Staff_Service.Repositories
                 var emailCheck = _stagingContext.staging_db.Any(x => x.StaffEmailAddress == staffDomainModel.StaffEmailAddress);
                 if (emailCheck == false)
                 {
-                    return _stagingContext.staging_db.Add(staffDomainModel).Entity;
+                    _stagingContext.staging_db.Add(staffDomainModel);
+                    return true;
                 }
-                return null;
+                return false;
             }
             else if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production") 
             {
                 var emailCheck = _productionContext.production_db.Any(x => x.StaffEmailAddress == staffDomainModel.StaffEmailAddress);
                 if (emailCheck == false)
                 {
-                    return _productionContext.production_db.Add(staffDomainModel).Entity;
+                    _productionContext.production_db.Add(staffDomainModel);
+                    return true;
                 }
-                return null;
+                return false;
             }
-            return null;
+            return false;
         }
 
 

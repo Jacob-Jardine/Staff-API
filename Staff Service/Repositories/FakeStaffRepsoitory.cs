@@ -26,7 +26,7 @@ namespace Staff_Service.Repositories
 
         public Task<StaffDomainModel> GetStaffByIDAsnyc(int? ID) => Task.FromResult(_staffList.FirstOrDefault(x => x.StaffID == ID));
 
-        public StaffDomainModel CreateStaff(StaffDomainModel staffDomainModel)
+        public async Task<bool> CreateStaff(StaffDomainModel staffDomainModel)
         {
             var emailCheck = _staffList.Any(x => x.StaffEmailAddress == staffDomainModel.StaffEmailAddress);
             if (emailCheck == false)
@@ -34,10 +34,10 @@ namespace Staff_Service.Repositories
                 int newStaffID = GetStaffID();
                 staffDomainModel.StaffID = newStaffID;
                 staffDomainModel.StaffEmailAddress.ToLower();
-                _staffList.Add(staffDomainModel);
-                return staffDomainModel;
+                 _staffList.Add(staffDomainModel);
+                return true;
             }
-            return null;
+            return false;
         }
 
         public void UpdateStaff(StaffDomainModel staffDomainModel) 

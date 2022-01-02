@@ -12,6 +12,7 @@ using Staff_Service.Repositories.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Staff_xUnit_Tests
@@ -24,7 +25,7 @@ namespace Staff_xUnit_Tests
         public StaffDomainModel dbStaff;
         public Mock<DbSet<StaffDomainModel>> mockStaff;
         public Mock<ProductionContext> mockDbContext;
-        public FakeStaffRepository repo;
+        public SqlStaffRepository repo;
         public StaffRepoModel anonymisedStaff;
 
         private void SetUpStaffRepoModel()
@@ -88,7 +89,34 @@ namespace Staff_xUnit_Tests
             SetUpStaffs();
             SetUpMockStaffs();
             SetupMockDbContext();
-            repo = new SqlStaffRepository(mockDbContext.Object, mapper);
+            repo = new SqlStaffRepository(mockDbContext.Object);
+        }
+
+        [Fact]
+        public async Task NewStaff_True()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var staffModel = mapper.Map<StaffDomainModel>(staffRepoModel);
+            var result =  await repo.CreateStaff(staffModel);
+
+            //Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task NewStaff_null()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var result = await repo.CreateStaff(null);
+
+            //Assert
+            Assert.False(result);
         }
     }
 }
