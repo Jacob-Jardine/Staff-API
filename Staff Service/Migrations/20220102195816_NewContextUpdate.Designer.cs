@@ -8,15 +8,15 @@ using Staff_Service.Context;
 
 namespace Staff_Service.Migrations
 {
-    [DbContext(typeof(StagingContext))]
-    [Migration("20211115172501_Staging-Migration")]
-    partial class StagingMigration
+    [DbContext(typeof(StaffDbContext))]
+    [Migration("20220102195816_NewContextUpdate")]
+    partial class NewContextUpdate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("staging")
+                .HasDefaultSchema("StaffSchema")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -42,7 +42,7 @@ namespace Staff_Service.Migrations
 
                     b.HasKey("StaffID");
 
-                    b.ToTable("staging_db");
+                    b.ToTable("StaffTable");
 
                     b.HasData(
                         new
@@ -65,13 +65,6 @@ namespace Staff_Service.Migrations
                             StaffEmailAddress = "Joseph-Stavers@ThAmCo.co.uk",
                             StaffFirstName = "Joseph",
                             StaffLastName = "Stavers"
-                        },
-                        new
-                        {
-                            StaffID = 4,
-                            StaffEmailAddress = "Teddy-Teasdale@ThAmCo.co.uk",
-                            StaffFirstName = "Teddy",
-                            StaffLastName = "Teasdale"
                         });
                 });
 #pragma warning restore 612, 618

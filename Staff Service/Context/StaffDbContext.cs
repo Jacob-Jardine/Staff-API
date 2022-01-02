@@ -7,23 +7,21 @@ using System.Threading.Tasks;
 
 namespace Staff_Service.Context
 {
-    public class StagingContext : DbContext
+    public class StaffDbContext : DbContext
     {
-        public virtual DbSet<StaffDomainModel> staging_db { get; set; }
-
-        public StagingContext(DbContextOptions<StagingContext> options) : base(options) { }
-
-        public StagingContext() { }
+        public StaffDbContext() { }
+        public StaffDbContext(DbContextOptions<StaffDbContext> options) : base(options) { }
+        public virtual DbSet<StaffDomainModel> StaffTable { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
         }
 
-        protected override void OnModelCreating(ModelBuilder builder) 
+        protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.HasDefaultSchema("staging");
+            builder.HasDefaultSchema("StaffSchema");
 
             builder.Entity<StaffDomainModel>()
                 .HasData(
@@ -47,13 +45,6 @@ namespace Staff_Service.Context
                     StaffFirstName = "Joseph",
                     StaffLastName = "Stavers",
                     StaffEmailAddress = "Joseph-Stavers@ThAmCo.co.uk"
-                },
-                new StaffDomainModel
-                {
-                    StaffID = 4,
-                    StaffFirstName = "Teddy",
-                    StaffLastName = "Teasdale",
-                    StaffEmailAddress = "Teddy-Teasdale@ThAmCo.co.uk"
                 });
         }
     }

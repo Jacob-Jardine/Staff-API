@@ -32,6 +32,15 @@ namespace Staff_Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<StaffDbContext>(options => options.UseSqlServer
+                (
+                    Configuration.GetConnectionString("DbConnection"),
+                        sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(6),
+                        errorNumbersToAdd: null)
+                ));
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -60,21 +69,9 @@ namespace Staff_Service
             {
                 services.AddSingleton<IStaffRepository, FakeStaffRepository>();
             }
-            else if (_environment.IsStaging())
+            else if (!_environment.IsDevelopment()) 
             {
-                services.AddDbContext<StagingContext>(options => options.UseSqlServer
-                (
-                    Configuration.GetConnectionString("DbConnection"),
-                        sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 5,
-                        maxRetryDelay: TimeSpan.FromSeconds(6),
-                        errorNumbersToAdd: null)
-                ));
-                services.AddScoped<IStaffRepository, SqlStaffRepository>();
-            }
-            else if (_environment.IsProduction()) 
-            {
-                services.AddDbContext<ProductionContext>(options => options.UseSqlServer
+                services.AddDbContext<StaffDbContext>(options => options.UseSqlServer
                 (
                     Configuration.GetConnectionString("DbConnection"),
                         sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure(

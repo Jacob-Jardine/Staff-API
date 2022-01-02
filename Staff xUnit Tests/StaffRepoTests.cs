@@ -24,7 +24,7 @@ namespace Staff_xUnit_Tests
         public IQueryable<StaffDomainModel> dbStaffs;
         public StaffDomainModel dbStaff;
         public Mock<DbSet<StaffDomainModel>> mockStaff;
-        public Mock<ProductionContext> mockDbContext;
+        public Mock<StaffDbContext> mockDbContext;
         public SqlStaffRepository repo;
         public StaffRepoModel anonymisedStaff;
 
@@ -32,10 +32,10 @@ namespace Staff_xUnit_Tests
         {
             staffRepoModel = new StaffRepoModel
             {
-                StaffID = 1,
+                StaffID = 99,
                 StaffFirstName = "Jacob",
                 StaffLastName = "Jardine",
-                StaffEmailAddress = "JacobJardine@ThAmCo.com"
+                StaffEmailAddress = "JacobJardine1@ThAmCo.com"
             };
         }
 
@@ -43,10 +43,10 @@ namespace Staff_xUnit_Tests
         {
             dbStaff = new StaffDomainModel
             {
-                StaffID = 1,
+                StaffID = 22,
                 StaffFirstName = "Jacob",
                 StaffLastName = "Jardine",
-                StaffEmailAddress = "JacobJardine@ThAmCo.com"
+                StaffEmailAddress = "JacobJardine2@ThAmCo.com"
             };
         }
 
@@ -78,8 +78,8 @@ namespace Staff_xUnit_Tests
 
         private void SetupMockDbContext()
         {
-            mockDbContext = new Mock<ProductionContext>();
-            mockDbContext.Setup(m => m.production_db).Returns(mockStaff.Object);
+            mockDbContext = new Mock<StaffDbContext>();
+            mockDbContext.Setup(m => m.StaffTable).Returns(mockStaff.Object);
         }
 
         private void DefaultSetup()
@@ -113,11 +113,35 @@ namespace Staff_xUnit_Tests
             DefaultSetup();
 
             //Act
+
             var result = await repo.CreateStaff(null);
 
             //Assert
             Assert.False(result);
         }
+
+        [Fact]
+        public async Task CreateStaff_InvalidModel()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var staffModel = mapper.Map<StaffDomainModel>(staffRepoModel);
+            staffModel.StaffEmailAddress = "";
+            var result = await repo.CreateStaff(staffModel);
+
+            //Assert
+            Assert.False(result);
+        }
+
+        //Id exists
+
+        //Model invalid
+
+        //Update
+
+        //Update id not valid
 
         [Fact]
         public async Task UpdateStaff_null()
