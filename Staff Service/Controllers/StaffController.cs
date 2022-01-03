@@ -23,11 +23,13 @@ namespace Staff_Service.Controllers
         private readonly IStaffRepository _staffRepository;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<StaffController> _logger;
 
-        public StaffController(IStaffRepository staffRepository, IMapper mapper, IMemoryCache memoryCache) 
+        public StaffController(IStaffRepository staffRepository, IMapper mapper, ILogger<StaffController> logger, IMemoryCache memoryCache) 
         {
             _staffRepository = staffRepository;
             _mapper = mapper;
+            _logger = logger;
             _memoryCache = memoryCache;
         }
 

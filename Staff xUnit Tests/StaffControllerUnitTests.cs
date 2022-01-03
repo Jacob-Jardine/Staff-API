@@ -1,4 +1,7 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Staff_Service.Controllers;
@@ -21,6 +24,13 @@ namespace Staff_xUnit_Tests
         private IMapper mapper;
         private ILogger<StaffController> logger;
         private StaffController controller;
+        private readonly IMemoryCache _memoryCache;
+
+        private void SetUpController(StaffController controller)
+        {
+            controller.ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+        }
 
         public void SetUpStaffModel()
         {
@@ -58,43 +68,51 @@ namespace Staff_xUnit_Tests
             }).CreateMapper();
         }
 
-        //private void SetMockReviewRepo()
-        //{
-        //    mockRepo = new Mock<IStaffRepository>(MockBehavior.Strict);
-            
-        //    mockRepo.Setup(repo => repo.GetStaffByIDAsnyc(It.IsAny<int>()))
-        //       .ReturnsAsync(new StaffDomainModel()).Verifiable();
-            
-        //    mockRepo.Setup(repo => repo.GetReviewsByCustomerId(It.IsAny<int>(), It.IsAny<bool>()))
-        //      .ReturnsAsync(new List<ReviewModel>()).Verifiable();
-            
-        //    mockRepo.Setup(repo => repo.GetReview(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
-        //      .ReturnsAsync(reviewExists ? new ReviewModel() : null).Verifiable();
-            
-        //    mockRepo.Setup(repo => repo.HideReview(It.IsAny<int>(), It.IsAny<int>()))
-        //      .ReturnsAsync(hideReviewSucceeds && reviewExists).Verifiable();
-        //}
+        private void SetLogger()
+        {
+            logger = new ServiceCollection()
+                .AddLogging()
+                .BuildServiceProvider()
+                .GetService<ILoggerFactory>()
+                .CreateLogger<StaffController>();
+        }
 
-        //private void DefaultSetup()
-        //{
-        //    SetupReviewModel();
-        //    SetupCustomerRepoModel();
-        //    SetMapper();
-        //    SetLogger();
-        //}
+        private void SetMockReviewRepo()
+        {
+            mockRepo = new Mock<IStaffRepository>(MockBehavior.Strict);
+            
+            mockRepo.Setup(repo => repo.GetAllStaffAsync())
+              .ReturnsAsync(new List<StaffDomainModel>()).Verifiable();
 
-        //private void SetupWithFakes()
-        //{
-        //    DefaultSetup();
-        //    SetFakeRepo();
-        //    controller = new StaffReviewController(logger, fakeRepo, mapper);
-        //}
+            mockRepo.Setup(repo => repo.GetStaffByIDAsnyc(It.IsAny<int>()))
+               .ReturnsAsync(new StaffDomainModel()).Verifiable();
+            mockRepo.Setup(repo => repo.CreateStaff(It.IsAny<StaffDomainModel>())).Verifiable();
+            
+            mockRepo.Setup(repo => repo.UpdateStaff(It.IsAny<StaffDomainModel>())).Verifiable();
+            
+            mockRepo.Setup(repo => repo.DeleteStaff(It.IsAny<int>())).Verifiable();
+        }
 
-        //private void SetupWithMocks()
-        //{
-        //    DefaultSetup();
-        //    SetMockReviewRepo();
-        //    controller = new StaffReviewController(logger, mockRepo.Object, mapper);
-        //}
+        private void DefaultSetup()
+        {
+            SetUpStaffModel();
+            SetUpFakeStaffList();
+            SetMapper();
+            SetUpController(controller);
+        }
+
+        private void SetupWithFakes()
+        {
+            DefaultSetup();
+            SetFakeRepo();
+            controller = new StaffController(fakeRepo, mapper, logger, _memoryCache); 
+        }
+
+        private void SetupWithMocks()
+        {
+            DefaultSetup();
+            SetMockReviewRepo();
+            controller = new StaffController(mockRepo.Object, mapper, logger, _memoryCache);
+        }
     }
 }
