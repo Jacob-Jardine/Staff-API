@@ -133,12 +133,7 @@ namespace Staff_xUnit_Tests
             var objResult = result as OkObjectResult;
             Assert.NotNull(objResult);
             var staff = objResult.Value;
-            var staffModel = mapper.Map<StaffDomainModel>(staff);
             Assert.NotNull(staff);
-            Assert.True(staffModel.StaffID == staff.StaffID);
-            Assert.True(staffModel.StaffFirstName == staff.StaffFirstName);
-            Assert.True(staffModel.StaffLastName == staff.StaffLastName);
-            Assert.True(staffModel.StaffEmailAddress == staff.StaffEmailAddress);
         }
 
         [Fact]
@@ -146,10 +141,9 @@ namespace Staff_xUnit_Tests
         {
             //Arrange
             SetupWithFakes();
-            int StaffId = 1;
-
+            
             //Act
-            var result = await controller.GetStaffByID(StaffId);
+            var result = await controller.GetStaffByID(listStaffModel[0].StaffID);
             
             //Assert
             Assert.NotNull(result);
@@ -158,10 +152,10 @@ namespace Staff_xUnit_Tests
             var staff = objResult.Value;
             var staffModel = mapper.Map<StaffDomainModel>(staff);
             Assert.NotNull(staff);
-            Assert.True(staffModel.StaffID == staff);
-            Assert.True(staffModel.StaffFirstName == staff.StaffFirstName);
-            Assert.True(staffModel.StaffLastName == staff.StaffLastName);
-            Assert.True(staffModel.StaffEmailAddress == staff.StaffEmailAddress);
+            Assert.True(listStaffModel[0].StaffID == staffModel.StaffID);
+            Assert.True(listStaffModel[0].StaffFirstName == staffModel.StaffFirstName);
+            Assert.True(listStaffModel[0].StaffLastName == staffModel.StaffLastName);
+            Assert.True(listStaffModel[0].StaffEmailAddress == staffModel.StaffEmailAddress);
         }
 
         [Fact]
@@ -261,7 +255,6 @@ namespace Staff_xUnit_Tests
             Assert.True(staffModel.StaffFirstName == staff.StaffFirstName);
             Assert.True(staffModel.StaffLastName == staff.StaffLastName);
             Assert.True(staffModel.StaffEmailAddress == staff.StaffEmailAddress);
-
         }
 
         [Fact]
@@ -296,6 +289,133 @@ namespace Staff_xUnit_Tests
             Assert.NotNull(result);
             var objResult = result as BadRequestObjectResult;
             Assert.Null(objResult);
+        }
+
+        [Fact]
+        public async void DeleteStaffId0_False()
+        {
+            //Arrange
+            SetupWithFakes();
+
+            //Act
+            var result = await controller.DeleteStaffByID(0);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestObjectResult;
+            Assert.Null(objResult);
+        }
+
+        [Fact]
+        public async void DeleteStaffId_True()
+        {
+            //Arrange
+            SetupWithFakes();
+
+            //Act
+            var result = await controller.DeleteStaffByID(1);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async void DeleteStaffId_False()
+        {
+            //Arrange
+            SetupWithFakes();
+
+            //Act
+            var result = await controller.DeleteStaffByID(100);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestObjectResult;
+            Assert.Null(objResult);
+        }
+        #endregion
+
+        #region Test With Mocks
+        [Fact]
+        public async void GetStaffById_True_Mock()
+        {
+            //Arrange
+            SetupWithMocks();
+            int id = 1;
+
+            //Act
+            var result = await controller.GetStaffByID(id);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var staff = objResult.Value;
+            var staffModel = mapper.Map<StaffDomainModel>(staff);
+            Assert.NotNull(staff);
+            mockRepo.Verify(x => x.GetStaffByIDAsnyc(It.IsAny<int>()), Times.Once);
+            mockRepo.Verify(x => x.CreateStaff(It.IsAny<StaffDomainModel>()), Times.Never);
+            mockRepo.Verify(x => x.UpdateStaff(It.IsAny<StaffDomainModel>()), Times.Never);
+            mockRepo.Verify(x => x.DeleteStaff(It.IsAny<int>()), Times.Never);
+        }
+
+        [Fact]
+        public async void GetStaffById0_Mock()
+        {
+            //Arrange
+            SetupWithMocks();
+            int id = 0;
+
+            //Act
+            var result = await controller.GetStaffByID(id);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestResult;
+            Assert.Null(objResult);
+            mockRepo.Verify(x => x.GetStaffByIDAsnyc(It.IsAny<int>()), Times.Never);
+            mockRepo.Verify(x => x.CreateStaff(It.IsAny<StaffDomainModel>()), Times.Never);
+            mockRepo.Verify(x => x.UpdateStaff(It.IsAny<StaffDomainModel>()), Times.Never);
+            mockRepo.Verify(x => x.DeleteStaff(It.IsAny<int>()), Times.Never);
+        }
+
+        [Fact]
+        public async void UpdateStaffNull_Mock()
+        {
+            //Arrange
+            SetupWithMocks();
+            //Act
+            var result = await controller.UpdateStaffMemeber(null, staffModel.StaffID);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestResult;
+            Assert.NotNull(objResult);
+            mockRepo.Verify(x => x.GetStaffByIDAsnyc(It.IsAny<int>()), Times.Never);
+            mockRepo.Verify(x => x.CreateStaff(It.IsAny<StaffDomainModel>()), Times.Never);
+            mockRepo.Verify(x => x.UpdateStaff(It.IsAny<StaffDomainModel>()), Times.Never);
+            mockRepo.Verify(x => x.DeleteStaff(It.IsAny<int>()), Times.Never);
+        }
+
+        [Fact]
+        public async void DeleteStaff_False_Mock()
+        {
+            //Arrange
+            SetupWithMocks();
+
+            //Act
+            var result = await controller.DeleteStaffByID(0);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestObjectResult;
+            Assert.Null(objResult);
+            mockRepo.Verify(x => x.GetStaffByIDAsnyc(It.IsAny<int>()), Times.Never);
+            mockRepo.Verify(x => x.CreateStaff(It.IsAny<StaffDomainModel>()), Times.Never);
+            mockRepo.Verify(x => x.UpdateStaff(It.IsAny<StaffDomainModel>()), Times.Never);
+            mockRepo.Verify(x => x.DeleteStaff(It.IsAny<int>()), Times.Never);
         }
         #endregion
     }

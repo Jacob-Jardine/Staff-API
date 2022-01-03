@@ -108,7 +108,6 @@ namespace Staff_Service.Controllers
 
                 var staffModel = _mapper.Map<StaffDomainModel>(staffCreateDTO);
                 await _staffRepository.CreateStaff(staffModel);
-                await _staffRepository.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetStaffByID), new { ID = staffModel.StaffID }, staffModel);
             }
             catch 
@@ -121,6 +120,10 @@ namespace Staff_Service.Controllers
         [Authorize("UpdateStaff")]
         public async Task<ActionResult> UpdateStaffMemeber([FromBody] StaffUpdateDTO staffUpdateDTO, int ID) 
         {
+            if(staffUpdateDTO == null)
+            {
+                return BadRequest();
+            }
             try 
             {
                 var staffModel = await _staffRepository.GetStaffByIDAsnyc(ID);
@@ -162,8 +165,7 @@ namespace Staff_Service.Controllers
                 }
                 else
                 {
-                    _staffRepository.DeleteStaff(staffModel.StaffID);
-                    await _staffRepository.SaveChangesAsync();
+                    await _staffRepository.DeleteStaff(staffModel.StaffID);
                     return Ok($"Delete staff memeber with ID {ID}");
                 }
             }
