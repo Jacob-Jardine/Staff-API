@@ -30,42 +30,72 @@ namespace Staff_Service.Repositories
 
         public async Task<bool> CreateStaff(StaffDomainModel staffDomainModel) 
         {
-            if(staffDomainModel == null)
+            if(staffDomainModel == null || staffDomainModel.StaffID.Equals(null) || string.IsNullOrEmpty(staffDomainModel.StaffFirstName) || string.IsNullOrEmpty(staffDomainModel.StaffLastName) ||
+                string.IsNullOrEmpty(staffDomainModel.StaffEmailAddress))
             {
                 return false;
             }
-            staffDomainModel.StaffEmailAddress.ToLower();
-
-            var emailCheck = _dbContext.StaffTable.Any(x => x.StaffEmailAddress == staffDomainModel.StaffEmailAddress);
-            if (emailCheck == false)
+            try
             {
-                _dbContext.StaffTable.Add(staffDomainModel);
-                return true;
-            }
+                staffDomainModel.StaffEmailAddress.ToLower();
 
-            return false;
+                var emailCheck = _dbContext.StaffTable.Any(x => x.StaffEmailAddress == staffDomainModel.StaffEmailAddress);
+                if (emailCheck == false)
+                {
+                    _dbContext.StaffTable.Add(staffDomainModel);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
         }
 
 
         public async Task<bool> DeleteStaff(int ID)
         {
-            if(ID == null)
+            try
             {
+                var staff = _dbContext.StaffTable.SingleOrDefault(x => x.StaffID == ID);
+                if(staff != null)
+                {
+                    _dbContext.StaffTable.Remove(staff);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
                 return false;
             }
-            StaffDomainModel StaffDomainModel = GetStaffByIDAsnyc(ID).Result;
-            _dbContext.StaffTable.Remove(StaffDomainModel);
-            return true;
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }          
         }
 
         public async Task<bool> UpdateStaff(StaffDomainModel staffDomainModel)
         {
-            if(staffDomainModel == null)
+            if (staffDomainModel == null || staffDomainModel.StaffID.Equals(null) || string.IsNullOrEmpty(staffDomainModel.StaffFirstName) || string.IsNullOrEmpty(staffDomainModel.StaffLastName) ||
+                string.IsNullOrEmpty(staffDomainModel.StaffEmailAddress))
             {
                 return false;
             }
-            _dbContext.StaffTable.Update(staffDomainModel);
-            return true;
+            var staff = _dbContext.StaffTable.FirstOrDefault(x => x.StaffID == staffDomainModel.StaffID);
+            if(staff == null || staff.StaffID != staffDomainModel.StaffID)
+            {
+                return false;
+            }
+            try
+            {
+                _dbContext.StaffTable.Update(staffDomainModel);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
         }
 
         public async Task SaveChangesAsync()
