@@ -37,10 +37,10 @@ namespace Staff_xUnit_Tests
         {
             staffModel = new StaffDomainModel
             {
-                StaffID = 1,
-                StaffFirstName = "Jacob",
-                StaffLastName = "Jardine",
-                StaffEmailAddress = "JacobJardine@ThAmCo.com"
+                StaffID = 3,
+                StaffFirstName = "ABC",
+                StaffLastName = "DEF",
+                StaffEmailAddress = "ABCDEF@ThAmCo.com"
             };
         }
 
@@ -119,21 +119,6 @@ namespace Staff_xUnit_Tests
 
         #region Testing With Fakes
         [Fact]
-        public async void CreateStaff_Null()
-        {
-            //Arrange
-            SetupWithFakes();
-
-            //Act
-            var result = await controller.CreateStaffMember(null);
-
-            //Assert
-            Assert.NotNull(result);
-            var objResult = result as BadRequestObjectResult;
-            Assert.Null(objResult);
-        }
-
-        [Fact]
         public async void GetAllStaff_True()
         {
             //Arrange
@@ -150,10 +135,10 @@ namespace Staff_xUnit_Tests
             var staff = objResult.Value;
             var staffModel = mapper.Map<StaffDomainModel>(staff);
             Assert.NotNull(staff);
-            Assert.True(staffModel.StaffID == staffModel.StaffID);
-            Assert.True(staffModel.StaffFirstName == staffModel.StaffFirstName);
-            Assert.True(staffModel.StaffLastName == staffModel.StaffLastName);
-            Assert.True(staffModel.StaffEmailAddress == staffModel.StaffEmailAddress);
+            Assert.True(staffModel.StaffID == staff.StaffID);
+            Assert.True(staffModel.StaffFirstName == staff.StaffFirstName);
+            Assert.True(staffModel.StaffLastName == staff.StaffLastName);
+            Assert.True(staffModel.StaffEmailAddress == staff.StaffEmailAddress);
         }
 
         [Fact]
@@ -173,10 +158,10 @@ namespace Staff_xUnit_Tests
             var staff = objResult.Value;
             var staffModel = mapper.Map<StaffDomainModel>(staff);
             Assert.NotNull(staff);
-            Assert.True(staffModel.StaffID == staffModel.StaffID);
-            Assert.True(staffModel.StaffFirstName == staffModel.StaffFirstName);
-            Assert.True(staffModel.StaffLastName == staffModel.StaffLastName);
-            Assert.True(staffModel.StaffEmailAddress == staffModel.StaffEmailAddress);
+            Assert.True(staffModel.StaffID == staff);
+            Assert.True(staffModel.StaffFirstName == staff.StaffFirstName);
+            Assert.True(staffModel.StaffLastName == staff.StaffLastName);
+            Assert.True(staffModel.StaffEmailAddress == staff.StaffEmailAddress);
         }
 
         [Fact]
@@ -211,7 +196,107 @@ namespace Staff_xUnit_Tests
             Assert.NotNull(objResult);
         }
 
-        
+        [Fact]
+        public async void CreateStaff_True()
+        {
+            //Arrange
+            SetupWithFakes();
+            var staff = staffModel;
+            var staffMember = mapper.Map<StaffCreateDTO>(staff);
+            //Act
+            var result = await controller.CreateStaffMember(staffMember);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestObjectResult;
+            Assert.Null(objResult);
+            var checkStaff = new StaffDomainModel();
+            foreach(var item in fakeRepo._staffList)
+            {
+                if(item.StaffID == staffMember.StaffID)
+                {
+                    checkStaff = item;
+                }
+            }
+            Assert.True(staffMember.StaffID == checkStaff.StaffID);
+            Assert.True(staffMember.StaffFirstName == checkStaff.StaffFirstName);
+            Assert.True(staffMember.StaffLastName == checkStaff.StaffLastName);
+            Assert.True(staffMember.StaffEmailAddress == checkStaff.StaffEmailAddress);
+        }
+
+        [Fact]
+        public async void CreateStaff_Null()
+        {
+            //Arrange
+            SetupWithFakes();
+
+            //Act
+            var result = await controller.CreateStaffMember(null);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestObjectResult;
+            Assert.Null(objResult);
+        }
+
+        [Fact]
+        public async void UpdateStaff_True()
+        {
+            //Arrange
+            SetupWithFakes();
+            var staff = listStaffModel[0];
+            staff.StaffFirstName = "Testing";
+            var staffMember = mapper.Map<StaffUpdateDTO>(staff);
+
+            //Act
+            var result = await controller.UpdateStaffMemeber(staffMember, 1);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);            
+            var staffModel = mapper.Map<StaffDomainModel>(staff);
+            Assert.NotNull(staff);
+            Assert.True(staffModel.StaffID == staff.StaffID);
+            Assert.True(staffModel.StaffFirstName == staff.StaffFirstName);
+            Assert.True(staffModel.StaffLastName == staff.StaffLastName);
+            Assert.True(staffModel.StaffEmailAddress == staff.StaffEmailAddress);
+
+        }
+
+        [Fact]
+        public async void UpdateStaff0_False()
+        {
+            //Arrange
+            SetupWithFakes();
+            var staff = staffModel;
+            var staffMember = mapper.Map<StaffUpdateDTO>(staff);
+
+            //Act
+            var result = await controller.UpdateStaffMemeber(staffMember, 0);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestObjectResult;
+            Assert.Null(objResult);
+        }
+
+        [Fact]
+        public async void UpdateStaffNonExistId_False()
+        {
+            //Arrange
+            SetupWithFakes();
+            var staff = staffModel;
+            var staffMember = mapper.Map<StaffUpdateDTO>(staff);
+
+            //Act
+            var result = await controller.UpdateStaffMemeber(staffMember, 100);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestObjectResult;
+            Assert.Null(objResult);
+        }
         #endregion
     }
 }

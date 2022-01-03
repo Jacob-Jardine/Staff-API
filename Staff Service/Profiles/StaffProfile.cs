@@ -21,6 +21,7 @@ namespace Staff_Service.Profiles
             CreateMap<StaffRepoModel, StaffDomainModel>();
             CreateMap<StaffReadDTO, StaffDomainModel>();
             CreateMap<StaffDomainModel, StaffReadDTO>();
+            CreateMap<StaffDomainModel, StaffCreateDTO>();
         }
     }
 }

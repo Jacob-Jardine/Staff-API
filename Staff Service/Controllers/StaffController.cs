@@ -133,17 +133,9 @@ namespace Staff_Service.Controllers
                     var updateStaff = _mapper.Map<StaffUpdateDTO>(staffUpdateDTO);
                     updateStaff.StaffID = staffModel.StaffID;
 
-                    if (!TryValidateModel(updateStaff)) 
-                    {
-                        return ValidationProblem(ModelState);
-                    }
-                    else
-                    {
-                        _mapper.Map(updateStaff, staffModel);
-                        _staffRepository.UpdateStaff(staffModel);
-                        await _staffRepository.SaveChangesAsync();
-                        return Ok();
-                    }
+                    _mapper.Map(updateStaff, staffModel);
+                    await _staffRepository.UpdateStaff(staffModel);
+                    return Ok(200);
                 }
             }
             catch 
