@@ -25,12 +25,11 @@ namespace Staff_Service.Controllers
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<StaffController> _logger;
 
-        public StaffController(IStaffRepository staffRepository, IMapper mapper, ILogger<StaffController> logger, IMemoryCache memoryCache) 
+        public StaffController(IStaffRepository staffRepository, IMapper mapper, ILogger<StaffController> logger) 
         {
             _staffRepository = staffRepository;
             _mapper = mapper;
             _logger = logger;
-            _memoryCache = memoryCache;
         }
 
         [HttpGet("GetAllStaff")]
@@ -39,10 +38,10 @@ namespace Staff_Service.Controllers
         {
             try 
             {
-                if(_memoryCache.TryGetValue("GetAllStaff", out IEnumerable<StaffDomainModel> staffDomainModel))
-                {
-                    return Ok(_mapper.Map<IEnumerable<StaffReadDTO>>(staffDomainModel));
-                }
+                //if(_memoryCache.TryGetValue("GetAllStaff", out IEnumerable<StaffDomainModel> staffDomainModel))
+                //{
+                //    return Ok(_mapper.Map<IEnumerable<StaffReadDTO>>(staffDomainModel));
+                //}
 
                 var getAllStaff = await _staffRepository.GetAllStaffAsync();
                 return Ok(_mapper.Map<IEnumerable<StaffReadDTO>>(getAllStaff));

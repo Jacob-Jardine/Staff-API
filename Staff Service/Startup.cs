@@ -67,7 +67,8 @@ namespace Staff_Service
 
             if (_environment.IsDevelopment()) 
             {
-                services.AddSingleton<IStaffRepository, FakeStaffRepository>();
+                //services.AddSingleton<IStaffRepository, FakeStaffRepository>();
+                services.AddScoped<IStaffRepository, SqlStaffRepository>();
             }
             else if (!_environment.IsDevelopment()) 
             {
@@ -84,12 +85,12 @@ namespace Staff_Service
             
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddMemoryCache();
-            services.AddSingleton<IStaffMemoryCache, StaffMemoryCache>();
+            //services.AddMemoryCache();
+            //services.AddSingleton<IStaffMemoryCache, StaffMemoryCache>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IStaffMemoryCache memoryCache)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -109,7 +110,7 @@ namespace Staff_Service
                 endpoints.MapControllers();
             });
 
-            memoryCache.AutomateCache();
+            //memoryCache.AutomateCache();
         }
     }
 }
