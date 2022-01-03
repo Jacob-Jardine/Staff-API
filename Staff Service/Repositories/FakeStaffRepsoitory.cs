@@ -8,7 +8,7 @@ namespace Staff_Service.Repositories
 {
     public class FakeStaffRepository : IStaffRepository
     {
-        private readonly List<StaffDomainModel> _staffList;
+        public List<StaffDomainModel> _staffList;
 
         public FakeStaffRepository() 
         {
@@ -24,7 +24,7 @@ namespace Staff_Service.Repositories
 
         public Task<IEnumerable<StaffDomainModel>> GetAllStaffAsync() => Task.FromResult(new List<StaffDomainModel>(_staffList).AsEnumerable());
 
-        public Task<StaffDomainModel> GetStaffByIDAsnyc(int? ID) => Task.FromResult(_staffList.FirstOrDefault(x => x.StaffID == ID));
+        public Task<StaffDomainModel> GetStaffByIDAsnyc(int ID) => Task.FromResult(_staffList.FirstOrDefault(x => x.StaffID == ID));
 
         public async Task<bool> CreateStaff(StaffDomainModel staffDomainModel)
         {

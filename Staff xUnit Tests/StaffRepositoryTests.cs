@@ -23,7 +23,7 @@ namespace Staff_xUnit_Tests
         public StaffRepoModel staffRepoModel;
         public IMapper mapper;
         public IQueryable<StaffDomainModel> dbStaffs;
-        public StaffDomainModel dbStaff;
+        public StaffDomainModel dbStaff1, dbStaff2, dbStaff3;
         public Mock<DbSet<StaffDomainModel>> mockStaff;
         public Mock<StaffDbContext> mockDbContext;
         public SqlStaffRepository repo;
@@ -34,20 +34,34 @@ namespace Staff_xUnit_Tests
             staffRepoModel = new StaffRepoModel
             {
                 StaffID = 99,
-                StaffFirstName = "ABC",
-                StaffLastName = "DEF",
-                StaffEmailAddress = "ABCDEF@ThAmCo.com"
+                StaffFirstName = "Cristian",
+                StaffLastName = "Tudor",
+                StaffEmailAddress = "CristianTudor@ThAmCo.com"
             };
         }
 
         private void SetUpDbStaff()
         {
-            dbStaff = new StaffDomainModel
+            dbStaff1 = new StaffDomainModel
             {
                 StaffID = 22,
                 StaffFirstName = "Jacob",
                 StaffLastName = "Jardine",
-                StaffEmailAddress = "JacobJardine2@ThAmCo.com"
+                StaffEmailAddress = "JacobJardine@ThAmCo.com"
+            };
+            dbStaff2 = new StaffDomainModel
+            {
+                StaffID = 33,
+                StaffFirstName = "Teddy",
+                StaffLastName = "Teasedale",
+                StaffEmailAddress = "TeddyTeasedale@ThAmCo.com"
+            };
+            dbStaff2 = new StaffDomainModel
+            {
+                StaffID = 44,
+                StaffFirstName = "Ben",
+                StaffLastName = "Souch",
+                StaffEmailAddress = "BenSouch@ThAmCo.com"
             };
         }
 
@@ -64,7 +78,7 @@ namespace Staff_xUnit_Tests
             SetUpDbStaff();
             dbStaffs = new List<StaffDomainModel>
             {
-                dbStaff
+                dbStaff1, dbStaff2, dbStaff3
             }.AsQueryable();
         }
 
@@ -91,6 +105,25 @@ namespace Staff_xUnit_Tests
             SetUpMockStaffs();
             SetupMockDbContext();
             repo = new SqlStaffRepository(mockDbContext.Object);
+        }
+
+        [Fact]
+        public async Task GetAllStaff_True()
+        {
+            //Arrange
+            DefaultSetup();
+            
+            //Act
+            var result = repo.GetStaffByIDAsnyc(dbStaff1.StaffID);
+
+            //Assert
+            Assert.NotNull(result);
+            var staff = await result as StaffDomainModel;
+            Assert.Equal(dbStaff1.StaffID, staffRepoModel.StaffID);
+            Assert.NotNull(staff);
+            mockDbContext.Verify(m => m.StaffTable.Add(It.IsAny<StaffDomainModel>()), Times.Never());
+            mockDbContext.Verify(m => m.StaffTable.Remove(It.IsAny<StaffDomainModel>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [Fact]
@@ -141,7 +174,7 @@ namespace Staff_xUnit_Tests
             Assert.False(result);
             mockDbContext.Verify(m => m.StaffTable.Add(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.StaffTable.Remove(It.IsAny<StaffDomainModel>()), Times.Never());
-            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
         }
 
         [Fact]
@@ -149,7 +182,10 @@ namespace Staff_xUnit_Tests
         {
             //Arange
             DefaultSetup();
-            staffRepoModel.StaffID = dbStaff.StaffID;
+            staffRepoModel.StaffID = dbStaff1.StaffID;
+            staffRepoModel.StaffFirstName = dbStaff1.StaffFirstName;
+            staffRepoModel.StaffLastName = dbStaff1.StaffLastName;
+            staffRepoModel.StaffEmailAddress = dbStaff1.StaffEmailAddress;
             var staffModel = mapper.Map<StaffDomainModel>(staffRepoModel);
 
             //Act
@@ -157,10 +193,10 @@ namespace Staff_xUnit_Tests
 
             //Assert
             Assert.True(result);
-            Assert.Equal(dbStaff.StaffID, staffRepoModel.StaffID);
-            Assert.Equal(dbStaff.StaffFirstName, staffRepoModel.StaffFirstName);
-            Assert.Equal(dbStaff.StaffLastName, staffRepoModel.StaffLastName);
-            Assert.Equal(dbStaff.StaffEmailAddress, staffRepoModel.StaffEmailAddress);
+            Assert.Equal(dbStaff1.StaffID, staffRepoModel.StaffID);
+            Assert.Equal(dbStaff1.StaffFirstName, staffRepoModel.StaffFirstName);
+            Assert.Equal(dbStaff1.StaffLastName, staffRepoModel.StaffLastName);
+            Assert.Equal(dbStaff1.StaffEmailAddress, staffRepoModel.StaffEmailAddress);
             mockDbContext.Verify(m => m.StaffTable.Add(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.StaffTable.Remove(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
@@ -178,10 +214,10 @@ namespace Staff_xUnit_Tests
 
             //Assert
             Assert.False(result);
-            Assert.NotEqual(dbStaff.StaffID, staffRepoModel.StaffID);
-            Assert.NotEqual(dbStaff.StaffFirstName, staffRepoModel.StaffFirstName);
-            Assert.NotEqual(dbStaff.StaffLastName, staffRepoModel.StaffLastName);
-            Assert.NotEqual(dbStaff.StaffEmailAddress, staffRepoModel.StaffEmailAddress);
+            Assert.NotEqual(dbStaff1.StaffID, staffRepoModel.StaffID);
+            Assert.NotEqual(dbStaff1.StaffFirstName, staffRepoModel.StaffFirstName);
+            Assert.NotEqual(dbStaff1.StaffLastName, staffRepoModel.StaffLastName);
+            Assert.NotEqual(dbStaff1.StaffEmailAddress, staffRepoModel.StaffEmailAddress);
             mockDbContext.Verify(m => m.StaffTable.Add(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.StaffTable.Remove(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
@@ -198,10 +234,10 @@ namespace Staff_xUnit_Tests
 
             //Assert
             Assert.False(result);
-            Assert.NotEqual(dbStaff.StaffID, staffRepoModel.StaffID);
-            Assert.NotEqual(dbStaff.StaffFirstName, staffRepoModel.StaffFirstName);
-            Assert.NotEqual(dbStaff.StaffLastName, staffRepoModel.StaffLastName);
-            Assert.NotEqual(dbStaff.StaffEmailAddress, staffRepoModel.StaffEmailAddress);
+            Assert.NotEqual(dbStaff1.StaffID, staffRepoModel.StaffID);
+            Assert.NotEqual(dbStaff1.StaffFirstName, staffRepoModel.StaffFirstName);
+            Assert.NotEqual(dbStaff1.StaffLastName, staffRepoModel.StaffLastName);
+            Assert.NotEqual(dbStaff1.StaffEmailAddress, staffRepoModel.StaffEmailAddress);
             mockDbContext.Verify(m => m.StaffTable.Add(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.StaffTable.Remove(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
@@ -214,12 +250,12 @@ namespace Staff_xUnit_Tests
             DefaultSetup();
 
             //Act
-            var result = await repo.DeleteStaff(dbStaff.StaffID);
+            var result = await repo.DeleteStaff(dbStaff1.StaffID);
 
             //Assert
             Assert.True(result);
             mockDbContext.Verify(m => m.StaffTable.Add(It.IsAny<StaffDomainModel>()), Times.Never());
-            mockDbContext.Verify(m => m.StaffTable.Remove(dbStaff), Times.Once());
+            mockDbContext.Verify(m => m.StaffTable.Remove(dbStaff1), Times.Once());
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
         }
 

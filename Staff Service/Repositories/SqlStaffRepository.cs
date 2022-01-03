@@ -23,7 +23,7 @@ namespace Staff_Service.Repositories
             return await _dbContext.StaffTable.ToListAsync();
         }
 
-        public async Task<StaffDomainModel> GetStaffByIDAsnyc(int? ID) 
+        public async Task<StaffDomainModel> GetStaffByIDAsnyc(int ID) 
         {
             return await _dbContext.StaffTable.FirstOrDefaultAsync(x => x.StaffID == ID);
         }
