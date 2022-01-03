@@ -105,7 +105,7 @@ namespace Staff_xUnit_Tests
         {
             DefaultSetup();
             SetFakeRepo();
-            controller = new StaffController(fakeRepo, mapper, logger, _memoryCache);
+            controller = new StaffController(fakeRepo, mapper, logger);
             SetUpController(controller);
         }
 
@@ -113,7 +113,7 @@ namespace Staff_xUnit_Tests
         {
             DefaultSetup();
             SetMockReviewRepo();
-            controller = new StaffController(mockRepo.Object, mapper, logger, _memoryCache);
+            controller = new StaffController(mockRepo.Object, mapper, logger);
             SetUpController(controller);
         }
 
