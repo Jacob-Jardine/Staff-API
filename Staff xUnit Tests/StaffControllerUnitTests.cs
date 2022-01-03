@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -98,14 +99,14 @@ namespace Staff_xUnit_Tests
             SetUpStaffModel();
             SetUpFakeStaffList();
             SetMapper();
-            SetUpController(controller);
         }
 
         private void SetupWithFakes()
         {
             DefaultSetup();
             SetFakeRepo();
-            controller = new StaffController(fakeRepo, mapper, logger, _memoryCache); 
+            controller = new StaffController(fakeRepo, mapper, logger, _memoryCache);
+            SetUpController(controller);
         }
 
         private void SetupWithMocks()
@@ -113,6 +114,104 @@ namespace Staff_xUnit_Tests
             DefaultSetup();
             SetMockReviewRepo();
             controller = new StaffController(mockRepo.Object, mapper, logger, _memoryCache);
+            SetUpController(controller);
         }
+
+        #region Testing With Fakes
+        [Fact]
+        public async void CreateStaff_Null()
+        {
+            //Arrange
+            SetupWithFakes();
+
+            //Act
+            var result = await controller.CreateStaffMember(null);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as BadRequestObjectResult;
+            Assert.Null(objResult);
+        }
+
+        [Fact]
+        public async void GetAllStaff_True()
+        {
+            //Arrange
+            SetupWithFakes();
+            int StaffId = 1;
+
+            //Act
+            var result = await controller.GetStaffByID(StaffId);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var staff = objResult.Value;
+            var staffModel = mapper.Map<StaffDomainModel>(staff);
+            Assert.NotNull(staff);
+            Assert.True(staffModel.StaffID == staffModel.StaffID);
+            Assert.True(staffModel.StaffFirstName == staffModel.StaffFirstName);
+            Assert.True(staffModel.StaffLastName == staffModel.StaffLastName);
+            Assert.True(staffModel.StaffEmailAddress == staffModel.StaffEmailAddress);
+        }
+
+        [Fact]
+        public async void GetStaffById_True()
+        {
+            //Arrange
+            SetupWithFakes();
+            int StaffId = 1;
+
+            //Act
+            var result = await controller.GetStaffByID(StaffId);
+            
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var staff = objResult.Value;
+            var staffModel = mapper.Map<StaffDomainModel>(staff);
+            Assert.NotNull(staff);
+            Assert.True(staffModel.StaffID == staffModel.StaffID);
+            Assert.True(staffModel.StaffFirstName == staffModel.StaffFirstName);
+            Assert.True(staffModel.StaffLastName == staffModel.StaffLastName);
+            Assert.True(staffModel.StaffEmailAddress == staffModel.StaffEmailAddress);
+        }
+
+        [Fact]
+        public async void GetStaffById0_False()
+        {
+            //Arrange
+            SetupWithFakes();
+            int StaffId = 0;
+
+            //Act
+            var result = await controller.GetStaffByID(StaffId);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundObjectResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async void GetStaffByIncorrectId_False()
+        {
+            //Arrange
+            SetupWithFakes();
+            int StaffId = 100;
+
+            //Act
+            var result = await controller.GetStaffByID(StaffId);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundObjectResult;
+            Assert.NotNull(objResult);
+        }
+
+        
+        #endregion
     }
 }

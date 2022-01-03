@@ -19,6 +19,8 @@ namespace Staff_Service.Profiles
             CreateMap<StaffUpdateDTO, StaffDomainModel>();
             CreateMap<StaffDeleteDTO, StaffDomainModel>();
             CreateMap<StaffRepoModel, StaffDomainModel>();
+            CreateMap<StaffReadDTO, StaffDomainModel>();
+            CreateMap<StaffDomainModel, StaffReadDTO>();
         }
     }
 }

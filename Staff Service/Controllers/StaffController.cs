@@ -55,7 +55,7 @@ namespace Staff_Service.Controllers
 
         [HttpGet("{ID}")]
         [Authorize("ReadStaff")]
-        public async Task<ActionResult<StaffReadDTO>> GetStaffByID(int ID)
+        public async Task<IActionResult> GetStaffByID(int ID)
         {
             try 
             {
@@ -64,14 +64,14 @@ namespace Staff_Service.Controllers
                     return NotFound("ID can't be less than 1");
                 }
 
-                if (_memoryCache.TryGetValue("GetAllStaff", out IEnumerable<StaffDomainModel> staffDomainModel)) 
-                {
-                    var staffMember = staffDomainModel.FirstOrDefault(x => x.StaffID == ID);
-                    if(staffMember != null)
-                    {
-                        return Ok(_mapper.Map<StaffReadDTO>(staffMember));
-                    }
-                }
+                //if (_memoryCache.TryGetValue("GetAllStaff", out IEnumerable<StaffDomainModel> staffDomainModel)) 
+                //{
+                //    var staffMember = staffDomainModel.FirstOrDefault(x => x.StaffID == ID);
+                //    if(staffMember != null)
+                //    {
+                //        return Ok(_mapper.Map<StaffReadDTO>(staffMember));
+                //    }
+                //}
                 
                 var getStaffByID = await _staffRepository.GetStaffByIDAsnyc(ID);
                 if (getStaffByID != null) 
