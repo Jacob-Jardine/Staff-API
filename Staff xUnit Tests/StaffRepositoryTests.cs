@@ -33,7 +33,7 @@ namespace Staff_xUnit_Tests
         {
             staffRepoModel = new StaffRepoModel
             {
-                StaffID = 99,
+                StaffID = 10,
                 StaffFirstName = "Cristian",
                 StaffLastName = "Tudor",
                 StaffEmailAddress = "CristianTudor@ThAmCo.com"
@@ -52,16 +52,16 @@ namespace Staff_xUnit_Tests
             dbStaff2 = new StaffDomainModel
             {
                 StaffID = 33,
-                StaffFirstName = "Teddy",
-                StaffLastName = "Teasedale",
-                StaffEmailAddress = "TeddyTeasedale@ThAmCo.com"
+                StaffFirstName = "Jacob",
+                StaffLastName = "Jardine",
+                StaffEmailAddress = "JacobJardine@ThAmCo.com"
             };
-            dbStaff2 = new StaffDomainModel
+            dbStaff3 = new StaffDomainModel
             {
                 StaffID = 44,
-                StaffFirstName = "Ben",
-                StaffLastName = "Souch",
-                StaffEmailAddress = "BenSouch@ThAmCo.com"
+                StaffFirstName = "Jacob",
+                StaffLastName = "Jardine",
+                StaffEmailAddress = "JacobJardine@ThAmCo.com"
             };
         }
 
@@ -78,8 +78,11 @@ namespace Staff_xUnit_Tests
             SetUpDbStaff();
             dbStaffs = new List<StaffDomainModel>
             {
-                dbStaff1, dbStaff2, dbStaff3
+                dbStaff1,
+                dbStaff2,
+                dbStaff3
             }.AsQueryable();
+            
         }
 
         private void SetUpMockStaffs()
@@ -114,20 +117,42 @@ namespace Staff_xUnit_Tests
             DefaultSetup();
             
             //Act
-            var result = repo.GetStaffByIDAsnyc(dbStaff1.StaffID);
+            var result = repo.GetAllStaffAsync();
 
             //Assert
             Assert.NotNull(result);
-            var staff = await result as StaffDomainModel;
-            Assert.Equal(dbStaff1.StaffID, staffRepoModel.StaffID);
-            Assert.NotNull(staff);
+            var staffList = await result as List<StaffDomainModel>;
+            Assert.NotNull(staffList);
             mockDbContext.Verify(m => m.StaffTable.Add(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.StaffTable.Remove(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [Fact]
-        public async Task CreatStaff_True()
+        public async Task GetStaffById_True()
+        {
+            //Arrange
+            DefaultSetup();
+            var expectedStaff = dbStaffs.FirstOrDefault(x => x.StaffID == dbStaff1.StaffID);
+
+            //Act
+            var result = repo.GetStaffByIDAsnyc(dbStaff1.StaffID);
+
+            //Assert
+            Assert.NotNull(result);
+            var staff = await result;
+            Assert.NotNull(staff);
+            Assert.Equal(expectedStaff.StaffID, staff.StaffID);
+            Assert.Equal(expectedStaff.StaffFirstName, staff.StaffFirstName);
+            Assert.Equal(expectedStaff.StaffLastName, staff.StaffLastName);
+            Assert.Equal(expectedStaff.StaffEmailAddress, staff.StaffEmailAddress);
+            mockDbContext.Verify(m => m.StaffTable.Add(It.IsAny<StaffDomainModel>()), Times.Never());
+            mockDbContext.Verify(m => m.StaffTable.Remove(It.IsAny<StaffDomainModel>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task CreateStaff_True()
         {
             //Arrange
             DefaultSetup();
@@ -174,7 +199,7 @@ namespace Staff_xUnit_Tests
             Assert.False(result);
             mockDbContext.Verify(m => m.StaffTable.Add(It.IsAny<StaffDomainModel>()), Times.Never());
             mockDbContext.Verify(m => m.StaffTable.Remove(It.IsAny<StaffDomainModel>()), Times.Never());
-            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [Fact]

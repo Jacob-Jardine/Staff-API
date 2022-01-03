@@ -20,12 +20,17 @@ namespace Staff_Service.Repositories
 
         public async Task<IEnumerable<StaffDomainModel>> GetAllStaffAsync() 
         {
-            return await _dbContext.StaffTable.ToListAsync();
+            return _dbContext.StaffTable.ToList();
         }
 
         public async Task<StaffDomainModel> GetStaffByIDAsnyc(int ID) 
         {
-            return await _dbContext.StaffTable.FirstOrDefaultAsync(x => x.StaffID == ID);
+            var staff = _dbContext.StaffTable.FirstOrDefault(x => x.StaffID == ID);
+            if (staff == null)
+            {
+                return null;
+            }
+            return staff;
         }
 
         public async Task<bool> CreateStaff(StaffDomainModel staffDomainModel) 
