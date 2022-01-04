@@ -137,7 +137,7 @@ namespace Staff_Service.Controllers
 
                     _mapper.Map(updateStaff, staffModel);
                     await _staffRepository.UpdateStaff(staffModel);
-                    return Ok(200);
+                    return Ok($"Staff Member With Id {staffModel.StaffID} has been updated");
                 }
             }
             catch 
