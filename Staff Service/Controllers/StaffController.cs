@@ -136,8 +136,14 @@ namespace Staff_Service.Controllers
                     updateStaff.StaffID = staffModel.StaffID;
 
                     _mapper.Map(updateStaff, staffModel);
-                    await _staffRepository.UpdateStaff(staffModel);
-                    return Ok($"Staff Member With Id {staffModel.StaffID} has been updated");
+                    if (await _staffRepository.UpdateStaff(staffModel) == true)
+                    {
+                        return Ok($"Staff Member With Id {staffModel.StaffID} has been updated");
+                    }
+                    else
+                    {
+                        return BadRequest("Error In Model!");
+                    }
                 }
             }
             catch 
