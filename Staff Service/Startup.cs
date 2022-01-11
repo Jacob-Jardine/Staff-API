@@ -67,8 +67,8 @@ namespace Staff_Service
 
             if (_environment.IsDevelopment()) 
             {
-                //services.AddSingleton<IStaffRepository, FakeStaffRepository>();
-                services.AddScoped<IStaffRepository, SqlStaffRepository>();
+                services.AddSingleton<IStaffRepository, FakeStaffRepository>();
+                //services.AddScoped<IStaffRepository, SqlStaffRepository>();
             }
             else if (!_environment.IsDevelopment()) 
             {
